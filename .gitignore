@@ -1,0 +1,11 @@
+\.idea/
+__pycache__/
+*.pyc
+.tox
+.pytest_cache
+/cyberwatch_api.egg-info/
+api.conf
+.vscode
+.venv
+build/
+dist/
