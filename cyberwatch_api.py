@@ -1,13 +1,13 @@
+"""Cyberwatch API Python Helper"""
 import os
-import requests
 from configparser import ConfigParser
 from typing import Generator
-
+import requests
 
 class Cyberwatch_Pyhelper:
     CONF = ConfigParser()
 
-    def __init__(self, *arg, **kwargs):
+    def __init__(self, **kwargs):
         self.path_to_conf = kwargs.get("path_to_conf")
         self.api_url = kwargs.get("api_url")
         self.api_key = kwargs.get("api_key")
@@ -29,8 +29,7 @@ class Cyberwatch_Pyhelper:
             self.__path_to_conf = os.path.join(directory, "api.conf")
         # If still not found, search in parent directory of cwd
         if len(self.CONF.read(self.__path_to_conf)) == 0:
-            self.__path_to_conf = os.path.join(
-                os.path.dirname(directory), "api.conf")
+            self.__path_to_conf = os.path.join(os.path.dirname(directory), "api.conf")
         # If no conf file was found set it to None
         if len(self.CONF.read(self.__path_to_conf)) == 0:
             self.__path_to_conf = None
@@ -47,11 +46,10 @@ class Cyberwatch_Pyhelper:
         def wrapper(*args, **kwargs):
             endpoint = kwargs.get("endpoint")
             if "{id}" in endpoint:
-                id = kwargs.get("params").get("id")
+                params_id = kwargs.get("params").get("id")
                 del kwargs["params"]["id"]
-                endpoint = endpoint.replace("{id}", str(id))
+                endpoint = endpoint.replace("{id}", str(params_id))
                 kwargs.update({"endpoint": endpoint})
-                kwargs["params"].update({"retrieve_all": False})
             return f(*args, **kwargs)
 
         return wrapper
@@ -70,7 +68,7 @@ class Cyberwatch_Pyhelper:
         else:
             self.__api_url = os.getenv("api_url")
         if self.__api_url is None:
-            raise Exception("api_url was not found")
+            raise Exception("api_url not found")
 
     @property
     def api_key(self) -> str:
@@ -118,7 +116,7 @@ class Cyberwatch_Pyhelper:
 
     @method.setter
     def method(self, value: str):
-        if type(value) is str:
+        if isinstance(value, str):
             self.__method = str(value).upper()
         else:
             raise Exception("The type of method parameter should be a str")
@@ -129,10 +127,21 @@ class Cyberwatch_Pyhelper:
 
     @url.setter
     def url(self, value: str):
-        if type(value) is str:
+        if isinstance(value, str):
             self.__url = self.api_url + value
         else:
             raise Exception("The type of endpoint parameter should be str")
+
+    @property
+    def timeout(self) -> int:
+        return self.__timeout
+
+    @timeout.setter
+    def timeout(self, value: int):
+        if isinstance(value, int):
+            self.__timeout = value
+        else:
+            raise Exception("The type of timeout parameter should be int")
 
     def __basic_auth(self) -> requests.auth.HTTPBasicAuth:
         """
@@ -140,49 +149,31 @@ class Cyberwatch_Pyhelper:
         """
         return requests.auth.HTTPBasicAuth(self.api_key, self.api_secret)
 
-    def __basic_params(self, params: dict) -> dict:
-        """
-        Private Method that sets 'per_page' and 'page' params if they were not given.
-        Also sets the 'retrieve_all' parameter to True if it was not set before.
-        """
-        params.update({"per_page": params.get("per_page", 100)})
-        params.update({"page": params.get("page", 1)})
-        if self.method == "GET":
-            if "ping" not in self.url:
-                params.update(
-                    {"retrieve_all": params.get("retrieve_all", True)})
-        return params
-
     @clear_endpoint
-    def request(
-        self, *args, **kwargs
-    ) -> Generator[requests.models.Response, None, None]:
+    def request(self, **kwargs) -> Generator[requests.models.Response, None, None]:
         """
         Only accessible method, handles every step of the API call
         """
         self.method = kwargs.get("method")
         self.url = kwargs.get("endpoint")
-        params = self.__basic_params(kwargs.get("params"))
-        retrieve_all = params.get("retrieve_all")
+        self.timeout = kwargs.get("timeout") or 10
+        params = kwargs.get("params") or {}
         response = requests.request(
-            method=self.method, url=self.url, auth=self.__basic_auth(), params=params
+            method=self.method,
+            url=self.url,
+            auth=self.__basic_auth(),
+            params=params,
+            timeout=self.timeout
         )
-        # This is necessary because the yield will go infinite for any other method than a 'GET' all, as the API always returns an object.
-        # And the while is necessary because we are not told how many pages or how many items there are in the response
-        if retrieve_all:
-            page = params.get("page")
-            yield response
-            while response.json() != []:
-                page += 1
-                params.update({"page": page})
-                response = requests.request(
-                    method=self.method,
-                    url=self.url,
-                    auth=self.__basic_auth(),
-                    params=params,
-                )
-                yield response
-        else:
+        yield response
+        while "next" in response.links:
+            response = requests.request(
+                method=self.method,
+                url=response.links["next"]["url"],
+                auth=self.__basic_auth(),
+                params=params,
+                timeout=self.timeout
+            )
             yield response
 
 
