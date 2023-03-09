@@ -19,6 +19,13 @@ Python Api client for the Cyberwatch software
 - [ ] [Python 3](https://www.python.org/)
 - [ ] Python [PIP](https://pypi.org/project/pip/)
 
+### Module installation
+To install the Cyberwatch API module, use Python 3 with:
+
+```python
+pip3 install cyberwatch_api
+```
+
 ### Configuration
 
 To be able to authenticate to the Cyberwatch API, you need to configure the api.conf file. This client authenticates using basic auth.
@@ -32,7 +39,7 @@ You can download directly the api.conf file after clicking on "Create > Export" 
 ## Ping
 
 Create a ping.py script with the following content inside: 
-```
+```python
 from cyberwatch_api import Cyberwatch_Pyhelper
 
 output = Cyberwatch_Pyhelper().request(
