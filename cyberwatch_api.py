@@ -1,5 +1,6 @@
 """Cyberwatch API Python Helper"""
 import os
+import json
 from configparser import ConfigParser
 from typing import Generator
 import requests
@@ -158,12 +159,24 @@ class Cyberwatch_Pyhelper:
         self.url = kwargs.get("endpoint")
         self.timeout = kwargs.get("timeout") or 10
         params = kwargs.get("params") or {}
+        body_params = kwargs.get("body_params") or {}
+
+        headers = {'Content-type': 'application/json'}
+
+        if body_params is not None:
+            body_params = json.dumps(body_params)
+
+        self.verify_ssl = kwargs.get("verify_ssl")
+
         response = requests.request(
             method=self.method,
             url=self.url,
+            headers=headers,
             auth=self.__basic_auth(),
             params=params,
-            timeout=self.timeout
+            data=body_params,
+            timeout=self.timeout,
+            verify=self.verify_ssl
         )
         yield response
         while "next" in response.links:
