@@ -7,6 +7,7 @@ Python Api client for the Cyberwatch software
 
 - [Installation](#installation)
   - [Prerequisites](#prerequisites)
+  - [Module installation](#module-installation)
   - [Configuration](#configuration)
 - [Ping](#ping)
 - [Examples](#examples)
@@ -89,3 +90,23 @@ Note that the `request` method provided by this module always outputs a generato
 **Location of the Swagger's documentation**
 
 You can find it while clicking on the </> logo on the top right of the Cyberwatch interface.
+
+**Request body parameters**
+
+When using this API, you need to distinguish between GET/DELETE and POST/PUT methods.
+
+For the GET/DELETE methods you need to use the `params` variable, while for the POST/PUT methods, you need to use the `body_params` variable as follows:
+```python
+output = Cyberwatch_Pyhelper().request(
+    method="get",
+    endpoint="/api/v3/assets/servers/{id}",
+    params={'id' : 7}
+)
+```
+```python
+output = Cyberwatch_Pyhelper().request(
+    method="put",
+    endpoint="/api/v3/vulnerabilities/servers/{id}",
+    body_params={'id' : 7, 'description' : "this is a description", "groups":[3,4]}
+)
+```
