@@ -186,8 +186,7 @@ class Cyberwatch_Pyhelper:
                 url=response.links["next"]["url"],
                 auth=self.__basic_auth(),
                 params=params,
-                timeout=self.timeout,
-                verify=self.verify_ssl
+                timeout=self.timeout
             )
             yield response
 
