@@ -121,7 +121,7 @@ output = Cyberwatch_Pyhelper().request(
 output = Cyberwatch_Pyhelper().request(
     method="put",
     endpoint="/api/v3/vulnerabilities/servers/{id}",
-    body_params={'id':7,'description' : "this is a description", "groups":[3,4]}
+    body_params={'id' : 7,'description' : "this is a description", "groups":[3,4]}
 )
 ```
 
