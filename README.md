@@ -131,6 +131,7 @@ output = Cyberwatch_Pyhelper().request(
 
 Error example:
 
+
 ```bash
 ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:997)
 ```
