@@ -13,6 +13,7 @@ Python Api client for the Cyberwatch software
 - [Ping](#ping)
 - [Examples](#examples)
 - [Usage](#usage)
+- [FAQs](#faqs)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 ## Installation
@@ -120,6 +121,33 @@ output = Cyberwatch_Pyhelper().request(
 output = Cyberwatch_Pyhelper().request(
     method="put",
     endpoint="/api/v3/vulnerabilities/servers/{id}",
-    body_params={'id' : 7, 'description' : "this is a description", "groups":[3,4]}
+    body_params={'id' : 7,'description' : "this is a description", "groups":[3,4]}
 )
+```
+
+## FAQs
+
+**What if I don't want to verify the SSL certificate?**
+
+Error example:
+
+
+```bash
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:997)
+```
+
+Certificate verification can be bypassed with the `verify_ssl` option.
+
+For example, this option was added to the previous ping.py script as follows:
+
+```python
+from cyberwatch_api import Cyberwatch_Pyhelper
+
+output = Cyberwatch_Pyhelper().request(
+    method="get",
+    endpoint="/api/v3/ping",
+    verify_ssl=False
+    )
+
+print(next(output).json())
 ```
