@@ -150,7 +150,19 @@ class Cyberwatch_Pyhelper:
         Private method returning a BasicAuth
         """
         return requests.auth.HTTPBasicAuth(self.api_key, self.api_secret)
-
+    
+    def api_http_request(self, url):
+        return requests.request(
+            method=self.method,
+            url=url,
+            headers=self.headers,
+            auth=self.__basic_auth(),
+            params=self.params,
+            data=self.body_params,
+            timeout=self.timeout,
+            verify=self.verify_ssl
+        )
+    
     @clear_endpoint
     def request(self, **kwargs) -> Generator[requests.models.Response, None, None]:
         """
@@ -159,36 +171,20 @@ class Cyberwatch_Pyhelper:
         self.method = kwargs.get("method")
         self.url = kwargs.get("endpoint")
         self.timeout = kwargs.get("timeout") or 10
-        params = kwargs.get("params") or {}
-        body_params = kwargs.get("body_params") or {}
+        self.params = kwargs.get("params") or {}
+        self.body_params = kwargs.get("body_params") or {}
 
-        headers = {'Content-type': 'application/json'}
+        self.headers = {'Content-type': 'application/json'}
 
-        if body_params is not None:
-            body_params = json.dumps(body_params)
+        if self.body_params is not None:
+            self.body_params = json.dumps(self.body_params)
 
         self.verify_ssl = kwargs.get("verify_ssl")
 
-        response = requests.request(
-            method=self.method,
-            url=self.url,
-            headers=headers,
-            auth=self.__basic_auth(),
-            params=params,
-            data=body_params,
-            timeout=self.timeout,
-            verify=self.verify_ssl
-        )
+        response = self.api_http_request(self.url)
         yield response
         while "next" in response.links:
-            response = requests.request(
-                method=self.method,
-                url=response.links["next"]["url"],
-                auth=self.__basic_auth(),
-                params=params,
-                timeout=self.timeout,
-                verify=self.verify_ssl
-            )
+            response = self.api_http_request(response.links["next"]["url"])
             yield response
 
 
