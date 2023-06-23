@@ -42,17 +42,19 @@ class Cyberwatch_Pyhelper:
     def clear_endpoint(f):
         """
         Decorator that takes the endpoint that was given by the API user,
-        and replaces the {id} by the id parameter that was given inside the params or body params dict
+        and replaces the {parameter} by the one that was given inside the params or body params dict
         """
         def wrapper(*args, **kwargs):
             endpoint = kwargs.get("endpoint")
-            if "{id}" in endpoint:
-                params_id = (kwargs.get("params",{}).get("id") or kwargs.get("body_params",{}).get("id"))
-                for key in kwargs:
-                    if type(kwargs[key]) == dict :
-                        del(kwargs[key]["id"])
-                endpoint = endpoint.replace("{id}", str(params_id))
-                kwargs.update({"endpoint": endpoint})
+            parameters = [parameter.split("}")[0] for parameter in endpoint.split("{")[1:]]
+
+            for parameter in parameters:
+                parameter_value = (kwargs.get("params",{}).get(parameter) or kwargs.get("body_params",{}).get(parameter))
+                endpoint = endpoint.replace("{" + parameter + "}", str(parameter_value))
+                # Deleting the 'parameter' from the kwargs arguments if it exists
+                [kwargs[key].pop(parameter, "") for key in kwargs if type(kwargs[key]) == dict]
+
+            kwargs.update({"endpoint": endpoint})
             return f(*args, **kwargs)
         return wrapper
 
