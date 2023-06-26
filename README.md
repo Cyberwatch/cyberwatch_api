@@ -96,7 +96,7 @@ Cyberwatch API provides a Swagger documentation.
 
 Using it, you can :
  * Select the action you want to perform in the documentation
- * Update the "method", "endpoint" and parameters ("params") in you script according to the documentation 
+ * Update the "method", "endpoint" and parameters ("body_params") in you script according to the documentation 
  * Add any required logic
 
 Note that the `request` method provided by this module always outputs a generator. This is intended to allow building of high performance scripts. If the request you perform returns a single result and not a list, you will find the result in the first row of this generator.
@@ -105,23 +105,35 @@ Note that the `request` method provided by this module always outputs a generato
 
 You can find it while clicking on the </> logo on the top right of the Cyberwatch interface.
 
-**Request body parameters**
+**Request parameters**
 
-When using this API, you need to distinguish between GET/DELETE and POST/PUT methods.
+When using this API, you can use the `body_params` variable to send parameters to your endpoint.
 
-For the GET/DELETE methods you need to use the `params` variable, while for the POST/PUT methods, you need to use the `body_params` variable as follows:
 ```python
 output = Cyberwatch_Pyhelper().request(
     method="get",
-    endpoint="/api/v3/assets/servers/{id}",
-    params={'id' : 7}
+    endpoint="/api/v3/vulnerabilities/servers/{id}",
+    body_params={'id' : 7}
 )
 ```
+
 ```python
 output = Cyberwatch_Pyhelper().request(
     method="put",
     endpoint="/api/v3/vulnerabilities/servers/{id}",
     body_params={'id' : 7,'description' : "this is a description", "groups":[3,4]}
+)
+```
+
+**Paginate the response**
+
+You can select how many elements are returned per-page using the `per_page` parameter. If you need only a single page to be returned, you may specify it using the `page` parameter. 
+
+```python
+output = Cyberwatch_Pyhelper().request(
+    method="get",
+    endpoint="/api/v3/agents",
+    body_params={'per_page' : 50, 'page' : 3}
 )
 ```
 
