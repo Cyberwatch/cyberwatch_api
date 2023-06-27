@@ -42,17 +42,19 @@ class Cyberwatch_Pyhelper:
     def clear_endpoint(f):
         """
         Decorator that takes the endpoint that was given by the API user,
-        and replaces the {id} by the id parameter that was given inside the params or body params dict
+        and replaces the {parameter} by the one that was given inside the params or body params dict
         """
         def wrapper(*args, **kwargs):
             endpoint = kwargs.get("endpoint")
-            if "{id}" in endpoint:
-                params_id = (kwargs.get("params",{}).get("id") or kwargs.get("body_params",{}).get("id"))
-                for key in kwargs:
-                    if type(kwargs[key]) == dict :
-                        del(kwargs[key]["id"])
-                endpoint = endpoint.replace("{id}", str(params_id))
-                kwargs.update({"endpoint": endpoint})
+            parameters = [parameter.split("}")[0] for parameter in endpoint.split("{")[1:]]
+
+            for parameter in parameters:
+                parameter_value = (kwargs.get("params",{}).get(parameter) or kwargs.get("body_params",{}).get(parameter))
+                endpoint = endpoint.replace("{" + parameter + "}", str(parameter_value))
+                # Deleting the 'parameter' from the kwargs arguments if it exists
+                [kwargs[key].pop(parameter, "") for key in kwargs if type(kwargs[key]) == dict]
+
+            kwargs.update({"endpoint": endpoint})
             return f(*args, **kwargs)
         return wrapper
 
@@ -112,82 +114,40 @@ class Cyberwatch_Pyhelper:
         if self.__api_secret is None:
             raise Exception("api_secret not found")
 
-    @property
-    def method(self) -> str:
-        return self.__method
-
-    @method.setter
-    def method(self, value: str):
-        if isinstance(value, str):
-            self.__method = str(value).upper()
-        else:
-            raise Exception("The type of method parameter should be a str")
-
-    @property
-    def url(self) -> str:
-        return self.__url
-
-    @url.setter
-    def url(self, value: str):
-        if isinstance(value, str):
-            self.__url = self.api_url + value
-        else:
-            raise Exception("The type of endpoint parameter should be str")
-
-    @property
-    def timeout(self) -> int:
-        return self.__timeout
-
-    @timeout.setter
-    def timeout(self, value: int):
-        if isinstance(value, int):
-            self.__timeout = value
-        else:
-            raise Exception("The type of timeout parameter should be int")
-
     def __basic_auth(self) -> requests.auth.HTTPBasicAuth:
         """
         Private method returning a BasicAuth
         """
         return requests.auth.HTTPBasicAuth(self.api_key, self.api_secret)
-
+    
     @clear_endpoint
     def request(self, **kwargs) -> Generator[requests.models.Response, None, None]:
         """
         Only accessible method, handles every step of the API call
         """
-        self.method = kwargs.get("method")
-        self.url = kwargs.get("endpoint")
-        self.timeout = kwargs.get("timeout") or 10
+        if not isinstance(kwargs.get("method"), str): raise Exception("The type of endpoint parameter should be str")
+        if kwargs.get("timeout") and not isinstance(kwargs.get("timeout"), int): raise Exception("The type of timeout parameter should be int")
+
+        method = str(kwargs.get("method")).upper()
+        timeout = kwargs.get("timeout") or 10
         params = kwargs.get("params") or {}
-        body_params = kwargs.get("body_params") or {}
-
+        body_params = json.dumps(kwargs.get("body_params")) if kwargs.get("body_params") else {}
         headers = {'Content-type': 'application/json'}
+        verify_ssl = kwargs.get("verify_ssl")
+        url = self.api_url + kwargs.get("endpoint")
 
-        if body_params is not None:
-            body_params = json.dumps(body_params)
-
-        self.verify_ssl = kwargs.get("verify_ssl")
-
-        response = requests.request(
-            method=self.method,
-            url=self.url,
-            headers=headers,
-            auth=self.__basic_auth(),
-            params=params,
-            data=body_params,
-            timeout=self.timeout,
-            verify=self.verify_ssl
-        )
-        yield response
-        while "next" in response.links:
+        while url:
             response = requests.request(
-                method=self.method,
-                url=response.links["next"]["url"],
+                method=method,
+                url=url,
+                headers=headers,
                 auth=self.__basic_auth(),
                 params=params,
-                timeout=self.timeout
+                data=body_params,
+                timeout=timeout,
+                verify=verify_ssl
             )
+            url = response.links["next"]["url"] if "next" in response.links else None
             yield response
 
 
