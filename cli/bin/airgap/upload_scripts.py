@@ -2,7 +2,7 @@ from cyberwatch_api import Cyberwatch_Pyhelper
 from os.path import abspath, basename, dirname, join
 from itertools import groupby
 import argparse
-
+from .. import verify_ssl_value
 import chardet
 import sys
 import os
@@ -32,7 +32,8 @@ def upload_result_file(result_file):
         endpoint="/api/v2/cbw_scans/scripts",
         body_params={
             "output" : file_content
-        }
+        },
+        verify_ssl=verify_ssl_value()
     )
     result = next(apiResponse).json()
 

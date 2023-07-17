@@ -1,4 +1,5 @@
 from cyberwatch_api import Cyberwatch_Pyhelper
+from . import verify_ssl_value
 import sys
 
 def help():
@@ -13,7 +14,8 @@ def help():
 def retrieve_os():
     apiResponse = Cyberwatch_Pyhelper().request(
         method="GET",
-        endpoint="/api/v3/os"
+        endpoint="/api/v3/os",
+        verify_ssl=verify_ssl_value()
     )
     os = []
     for page in apiResponse: 

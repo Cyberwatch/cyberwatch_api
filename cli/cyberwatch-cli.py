@@ -1,8 +1,10 @@
 #!/usr/bin/env python
-
 from cyberwatch_api import Cyberwatch_Pyhelper
 import sys
 from bin import os, airgap
+import requests
+from urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
 def help():
     print("Usage : " + str(sys.argv[0]) + " [COMMAND] [ARGS]")

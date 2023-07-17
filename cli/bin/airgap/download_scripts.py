@@ -1,6 +1,7 @@
 from cyberwatch_api import Cyberwatch_Pyhelper
 from os.path import abspath, basename, dirname, join
 from itertools import groupby
+from .. import verify_ssl_value
 import argparse
 import sys
 import os
@@ -30,7 +31,8 @@ done
 def retrieve_scripts(scriptID=""):
     apiResponse = Cyberwatch_Pyhelper().request(
         method="GET",
-        endpoint="/api/v2/cbw_scans/scripts/" + str(scriptID)
+        endpoint="/api/v2/cbw_scans/scripts/" + str(scriptID),
+        verify_ssl=verify_ssl_value()
     )
     return next(apiResponse).json()
 

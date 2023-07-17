@@ -1,6 +1,7 @@
 from cyberwatch_api import Cyberwatch_Pyhelper
 from os.path import abspath, basename, dirname, join
 import os
+from .. import verify_ssl_value
 from .. import os as cbw_os
 import argparse
 import sys
@@ -25,7 +26,8 @@ def retrieve_compliance_scripts(os_key, repositories):
         body_params={
             "os" : str(os_key),
             "repositories" : repositories
-        }
+        },
+        verify_ssl=verify_ssl_value()
     )
     return next(apiResponse).json()
 
