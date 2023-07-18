@@ -137,6 +137,59 @@ output = Cyberwatch_Pyhelper().request(
 )
 ```
 
+## Cyberwatch-CLI
+
+`cyberwatch-cli` located in the `cli/` folder, is a tool allowing you to manage additional functionalities. You can learn more about them using the `help` subcommand.
+
+```bash
+python3 cyberwatch-cli.py help
+```
+
+**operating systems**
+
+You can list all the operating systems known by your Cyberwatch instance :
+
+```bash
+python3 cyberwatch-cli.py os list
+```
+
+**airgap assets**
+
+You can import all the airgap scripts to execute on your asset. If no directory is given, this will create a default `cyberwatch-airgap` folder.
+
+```bash
+python3 cyberwatch-cli.py airgap download-scripts
+```
+
+The `run` script you need to run can be found in the `scripts/` subdirectory, according to the target operating system. You can execute this script on a machine and save the produced output in a file.
+You can then create a new airgap asset by exporting the result file to your Cyberwatch instance :
+
+```bash
+python3 cyberwatch-cli.py airgap upload result.txt
+```
+
+**airgap compliance rules**
+
+You can download all the compliance rules to execute on your asset by specifying a target OS and a list of repositories to retrieve the rules from. If no directory is given, this will create a default `cyberwatch-airgap-compliance` folder.
+
+```bash
+python3 cyberwatch-cli.py airgap download-compliance-scripts --os OS_KEY --repositories REPOSITORY1, REPOSITORY2
+```
+
+The script you need to run can be found in the `scripts/` subdirectory. You can execute this script on an asset and save the produced output in a file.
+Afterward, you can export the file containing the conformity results to the corresponding airgap asset within your Cyberwatch instance.
+
+```bash
+python3 cyberwatch-cli.py airgap upload result_file.txt
+```
+**SSL Certificate Validation**
+
+By default, SSL certification validation is disabled. You can enable it by using the `--verify-ssl` flag :
+
+```bash
+python3 cyberwatch-cli.py --verify-ssl os list
+```
+
 ## FAQs
 
 **What if I don't want to verify the SSL certificate?**
