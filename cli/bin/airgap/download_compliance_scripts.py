@@ -18,18 +18,19 @@ def help():
     print("{: >20} \t {: >30} \t{}".format("--dest-dir", "cyberwatch-airgap-compliance", "Destination folder where to put the downloaded scripts"))
     print("\n")
 
-def retrieve_compliance_scripts(os_key, repositories):
+def retrieve_compliance_scripts(os_key, repositories, verify_ssl=False):
     apiResponse = Cyberwatch_Pyhelper().request(
         method="GET",
         endpoint="/api/v2/compliances/scripts",
         body_params={
             "os" : str(os_key),
             "repositories" : repositories
-        }
+        },
+        verify_ssl=verify_ssl
     )
     return next(apiResponse).json()
 
-def download_compliance_scripts(os_key, repositories, destination_folder):
+def download_compliance_scripts(os_key, repositories, destination_folder, verify_ssl=False):
     script_dir = join(abspath(destination_folder), "scripts")
     upload_dir = join(abspath(destination_folder), "uploads")
     if os.path.exists(script_dir):
@@ -38,7 +39,7 @@ def download_compliance_scripts(os_key, repositories, destination_folder):
     os.makedirs(upload_dir, exist_ok=True)
 
     print("Downloading compliance scripts..")
-    compliance_scripts_metadata = retrieve_compliance_scripts(os_key, repositories)
+    compliance_scripts_metadata = retrieve_compliance_scripts(os_key, repositories, verify_ssl)
 
     if 'error' in compliance_scripts_metadata:
         print(compliance_scripts_metadata["error"]["message"])
@@ -51,7 +52,8 @@ def download_compliance_scripts(os_key, repositories, destination_folder):
     print("\033[A\033[A\nDownload complete ! Scripts are located in '" + str(destination_folder) + "'")
     
 
-def manager(arguments):
+def manager(arguments, verify_ssl=False):
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--os")
     parser.add_argument("--repositories", "--groups", nargs='*')
@@ -71,4 +73,4 @@ def manager(arguments):
         print("Use the 'help' subcommand to view available actions")
 
     else:
-        download_compliance_scripts(options.os, options.repositories, options.dest_dir)
+        download_compliance_scripts(options.os, options.repositories, options.dest_dir, verify_ssl)
