@@ -27,23 +27,25 @@ for script in {}; do
 done
 """
 
-def retrieve_scripts(scriptID=""):
+def retrieve_scripts(scriptID, verify_ssl=False):
+    # If the script ID is an empty string, this will fetch every scripts available
     apiResponse = Cyberwatch_Pyhelper().request(
         method="GET",
-        endpoint="/api/v2/cbw_scans/scripts/" + str(scriptID)
+        endpoint="/api/v2/cbw_scans/scripts/" + str(scriptID),
+        verify_ssl=verify_ssl
     )
     return next(apiResponse).json()
 
-def download_scripts(destination_folder, with_attachment=False):
+def download_scripts(destination_folder, with_attachment=False, verify_ssl=False):
     script_dir = join(abspath(destination_folder), "scripts")
     upload_dir = join(abspath(destination_folder), "uploads")
     os.makedirs(script_dir, exist_ok=True)
     os.makedirs(upload_dir, exist_ok=True)
 
-    scripts_metadata = retrieve_scripts()
+    scripts_metadata = retrieve_scripts("", verify_ssl)
     print("Downloading scripts..")
     # Downloading every single script
-    saved_scripts = [download_individual_script(script["id"], script_dir, with_attachment) for script in scripts_metadata]
+    saved_scripts = [download_individual_script(script["id"], script_dir, with_attachment, verify_ssl) for script in scripts_metadata]
     # Grouping script by OS
     grouped_scripts = groupby(sorted(saved_scripts), lambda x: x[0])
 
@@ -70,8 +72,8 @@ def append_extension(target_os):
     if target_os == "Windows": return ".ps1"
     return ""
 
-def download_individual_script(scriptID, base_dir, with_attachment=False):
-    script = retrieve_scripts(str(scriptID))
+def download_individual_script(scriptID, base_dir, with_attachment=False, verify_ssl=False):
+    script = retrieve_scripts(str(scriptID), verify_ssl)
     if script is None or script["type"] is None: return None, None
 
     target_os, script_name = script["type"].split("::")[1:]
@@ -85,14 +87,15 @@ def download_individual_script(scriptID, base_dir, with_attachment=False):
 
     # Download the attachment if it exists
     if script["attachment"] and with_attachment:
-        attachment = requests.get(script["attachment"], allow_redirects=True, verify=False)
+        attachment = requests.get(script["attachment"], allow_redirects=True, verify=verify_ssl)
         with open(join(script_dir, basename(script["attachment"])), "wb") as attachmentFile:
             attachmentFile.write(attachment.content)
 
     print("\033[A\033[A\nDownloaded script : " + str(script_name) + " " * 40)
     return target_os, script_filename
 
-def manager(arguments):
+def manager(arguments, verify_ssl=False):
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--no-attachment", action="store_false")
     parser.add_argument("--dest-dir", default="cyberwatch-airgap")
@@ -102,4 +105,4 @@ def manager(arguments):
     if arguments and arguments[0] == "help":
         help()
     else:
-        download_scripts(options.dest_dir, options.no_attachment)
+        download_scripts(options.dest_dir, options.no_attachment, verify_ssl)

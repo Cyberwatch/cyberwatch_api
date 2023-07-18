@@ -2,7 +2,6 @@ from cyberwatch_api import Cyberwatch_Pyhelper
 from os.path import abspath, basename, dirname, join
 from itertools import groupby
 import argparse
-
 import chardet
 import sys
 import os
@@ -14,7 +13,7 @@ def help():
     print("---")
     print("If there is no file specified, this script will look into the `cyberwatch-airgap/uploads/` directory if it exists to find results scripts to upload.")
 
-def upload_result_file(result_file):
+def upload_result_file(result_file, verify_ssl=False):
     print("\n[*] Uploading : " + str(result_file))
 
     try: # Catch error like 'file doesn't exist'
@@ -32,7 +31,8 @@ def upload_result_file(result_file):
         endpoint="/api/v2/cbw_scans/scripts",
         body_params={
             "output" : file_content
-        }
+        },
+        verify_ssl=verify_ssl
     )
     result = next(apiResponse).json()
 
@@ -46,7 +46,8 @@ def upload_result_file(result_file):
         
     return next(apiResponse).json()
 
-def manager(arguments):
+def manager(arguments, verify_ssl=False):
+
     parser = argparse.ArgumentParser()
     parser.add_argument("files", nargs="*")
     options = parser.parse_args(arguments)
@@ -60,8 +61,8 @@ def manager(arguments):
         else:
             print("No file has been specified, searching through the `cyberwatch-airgap/uploads/` directory.\n--")
             for file in os.listdir("cyberwatch-airgap/uploads"):
-                upload_result_file(os.path.join("cyberwatch-airgap/uploads", file))
+                upload_result_file(os.path.join("cyberwatch-airgap/uploads", file), verify_ssl)
     else:
         for file in options.files:
-            upload_result_file(file)
+            upload_result_file(file, verify_ssl)
 

@@ -13,21 +13,21 @@ def help():
     print("{: >30} \t {}".format("download-compliance-scripts", "Download airgap compliance scripts"))
     print("\n")
 
-def manager(arguments):
+def manager(arguments, verify_ssl=False):
     if not arguments or arguments[0] == "help":
         help()
 
     elif arguments[0] == "download-scripts":
-        download_scripts.manager(arguments[1:])
+        download_scripts.manager(arguments[1:], verify_ssl)
 
     elif arguments[0] == "download-compliance-scripts":
-        download_compliance_scripts.manager(arguments[1:])
+        download_compliance_scripts.manager(arguments[1:], verify_ssl)
 
     elif arguments[0] == "upload":
-        upload_scripts.manager(arguments[1:])
+        upload_scripts.manager(arguments[1:], verify_ssl)
 
     elif arguments[0] == "upload-compliance":
-        upload_compliance_scripts.manager(arguments[1:])
+        upload_compliance_scripts.manager(arguments[1:], verify_ssl)
 
     else:
         print("ERROR : '" + str(arguments[0]) + "' is not a valid subcommand\n---", file=sys.stderr)
