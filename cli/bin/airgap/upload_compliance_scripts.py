@@ -28,22 +28,19 @@ def upload_result_file(result_file):
     # Sending result
     apiResponse = Cyberwatch_Pyhelper().request(
         method="POST",
-        endpoint="/api/v2/cbw_scans/scripts",
+        endpoint="/api/v2/compliances/scripts",
         body_params={
             "output" : file_content
         }
     )
-    result = next(apiResponse).json()
+    # If the operation is successful, the apiResponse is empty and the status code is 204
+    # Else, an error is reported with a status code != 204
+    result = next(apiResponse)
 
-    # Printing the upload result
-    if 'error' in result:
-        print("ERROR : " + result["error"]["message"])
-    elif 'server_id' in result:
-        print("[+] Upload successful ! Server ID : " + str(result["server_id"]))
+    if result.status_code == 204:
+        print("Upload is successful.")
     else:
-        print("Upload is done.")
-        
-    return next(apiResponse).json()
+        print("ERROR : " + str(result.content))
 
 def manager(arguments):
     parser = argparse.ArgumentParser()
