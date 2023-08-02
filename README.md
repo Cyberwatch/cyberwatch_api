@@ -13,6 +13,7 @@ Python Api client for the Cyberwatch software
 - [Ping](#ping)
 - [Examples](#examples)
 - [Usage](#usage)
+- [Command Line Documentation](#command-line-documentation)
 - [FAQs](#faqs)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -136,6 +137,10 @@ output = Cyberwatch_Pyhelper().request(
     body_params={'per_page' : 50, 'page' : 3}
 )
 ```
+
+## Command Line Documentation
+
+See the command line interface documentation [here](cli/README.md)
 
 ## FAQs
 
