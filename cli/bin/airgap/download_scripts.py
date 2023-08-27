@@ -7,12 +7,12 @@ import os
 import requests
 
 def help():
-    print("Usage : " + str(sys.argv[0]) + " airgap download-scripts [ARGS]")
+    print("Usage : cyberwatch-cli airgap download-scripts [ARGS]")
     print("---")
     print("Download airgap scripts.\n")
     print("{: >23} \t {: >20} \t{}".format("ARGS", "DEFAULT", "DESCRIPTION"))
     print("{: >23} \t {: >20} \t{}".format("---", "---", "---"))
-    print("{: >23} \t {: >20} \t{}".format("--no-attachement", "False", "-"))
+    print("{: >23} \t {: >20} \t{}".format("--no-attachment", "False", "-"))
     print("{: >23} \t {: >20} \t{}".format("--dest-dir", "cyberwatch-airgap", "Destination folder where to put the downloaded scripts"))
     print("\n")
 
@@ -27,25 +27,25 @@ for script in {}; do
 done
 """
 
-def retrieve_scripts(scriptID, verify_ssl=False):
+def retrieve_scripts(scriptID, CBW_API, verify_ssl=False):
     # If the script ID is an empty string, this will fetch every scripts available
-    apiResponse = Cyberwatch_Pyhelper().request(
+    apiResponse = CBW_API.request(
         method="GET",
         endpoint="/api/v2/cbw_scans/scripts/" + str(scriptID),
         verify_ssl=verify_ssl
     )
     return next(apiResponse).json()
 
-def download_scripts(destination_folder, with_attachment=False, verify_ssl=False):
+def download_scripts(destination_folder, CBW_API, verify_ssl=False, with_attachment=False):
     script_dir = join(abspath(destination_folder), "scripts")
     upload_dir = join(abspath(destination_folder), "uploads")
     os.makedirs(script_dir, exist_ok=True)
     os.makedirs(upload_dir, exist_ok=True)
 
-    scripts_metadata = retrieve_scripts("", verify_ssl)
+    scripts_metadata = retrieve_scripts("", CBW_API, verify_ssl)
     print("Downloading scripts..")
     # Downloading every single script
-    saved_scripts = [download_individual_script(script["id"], script_dir, with_attachment, verify_ssl) for script in scripts_metadata]
+    saved_scripts = [download_individual_script(script["id"], script_dir, CBW_API, with_attachment, verify_ssl) for script in scripts_metadata]
     # Grouping script by OS
     grouped_scripts = groupby(sorted(saved_scripts), lambda x: x[0])
 
@@ -72,8 +72,8 @@ def append_extension(target_os):
     if target_os == "Windows": return ".ps1"
     return ""
 
-def download_individual_script(scriptID, base_dir, with_attachment=False, verify_ssl=False):
-    script = retrieve_scripts(str(scriptID), verify_ssl)
+def download_individual_script(scriptID, base_dir, CBW_API, with_attachment=False, verify_ssl=False):
+    script = retrieve_scripts(str(scriptID), CBW_API, verify_ssl)
     if script is None or script["type"] is None: return None, None
 
     target_os, script_name = script["type"].split("::")[1:]
@@ -94,7 +94,7 @@ def download_individual_script(scriptID, base_dir, with_attachment=False, verify
     print("\033[A\033[A\nDownloaded script : " + str(script_name) + " " * 40)
     return target_os, script_filename
 
-def manager(arguments, verify_ssl=False):
+def manager(arguments, CBW_API, verify_ssl=False):
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--no-attachment", action="store_false")
@@ -105,4 +105,4 @@ def manager(arguments, verify_ssl=False):
     if arguments and arguments[0] == "help":
         help()
     else:
-        download_scripts(options.dest_dir, options.no_attachment, verify_ssl)
+        download_scripts(options.dest_dir, CBW_API, verify_ssl, options.no_attachment)

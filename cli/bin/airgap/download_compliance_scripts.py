@@ -7,7 +7,7 @@ import sys
 import shutil
 
 def help():
-    print("Usage : " + str(sys.argv[0]) + " airgap download-scripts --os [KEY] --repositories [LIST]")
+    print("Usage : cyberwatch-cli airgap download-scripts --os [KEY] --repositories [LIST]")
     print("---")
     print("Download compliance airgap scripts.\n")
     print("{: >20} \t {: >30} \t{}".format("ARGS", "DEFAULT", "DESCRIPTION"))
@@ -18,8 +18,8 @@ def help():
     print("{: >20} \t {: >30} \t{}".format("--dest-dir", "cyberwatch-airgap-compliance", "Destination folder where to put the downloaded scripts"))
     print("\n")
 
-def retrieve_compliance_scripts(os_key, repositories, verify_ssl=False):
-    apiResponse = Cyberwatch_Pyhelper().request(
+def retrieve_compliance_scripts(os_key, repositories, CBW_API, verify_ssl=False):
+    apiResponse = CBW_API.request(
         method="GET",
         endpoint="/api/v2/compliances/scripts",
         body_params={
@@ -30,7 +30,7 @@ def retrieve_compliance_scripts(os_key, repositories, verify_ssl=False):
     )
     return next(apiResponse).json()
 
-def download_compliance_scripts(os_key, repositories, destination_folder, verify_ssl=False):
+def download_compliance_scripts(os_key, repositories, destination_folder, CBW_API, verify_ssl=False):
     script_dir = join(abspath(destination_folder), "scripts")
     upload_dir = join(abspath(destination_folder), "uploads")
     if os.path.exists(script_dir):
@@ -39,7 +39,7 @@ def download_compliance_scripts(os_key, repositories, destination_folder, verify
     os.makedirs(upload_dir, exist_ok=True)
 
     print("Downloading compliance scripts..")
-    compliance_scripts_metadata = retrieve_compliance_scripts(os_key, repositories, verify_ssl)
+    compliance_scripts_metadata = retrieve_compliance_scripts(os_key, repositories, CBW_API, verify_ssl)
 
     if 'error' in compliance_scripts_metadata:
         print(compliance_scripts_metadata["error"]["message"])
@@ -52,7 +52,7 @@ def download_compliance_scripts(os_key, repositories, destination_folder, verify
     print("\033[A\033[A\nDownload complete ! Scripts are located in '" + str(destination_folder) + "'")
     
 
-def manager(arguments, verify_ssl=False):
+def manager(arguments, CBW_API, verify_ssl=False):
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--os")
@@ -73,4 +73,4 @@ def manager(arguments, verify_ssl=False):
         print("Use the 'help' subcommand to view available actions")
 
     else:
-        download_compliance_scripts(options.os, options.repositories, options.dest_dir, verify_ssl)
+        download_compliance_scripts(options.os, options.repositories, options.dest_dir, CBW_API, verify_ssl)
