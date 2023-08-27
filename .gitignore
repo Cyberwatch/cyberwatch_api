@@ -3,7 +3,7 @@ __pycache__/
 *.pyc
 .tox
 .pytest_cache
-/cyberwatch_api.egg-info/
+cyberwatch_api.egg-info
 api.conf
 .vscode
 .venv

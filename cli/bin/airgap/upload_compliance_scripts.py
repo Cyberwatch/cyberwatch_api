@@ -7,13 +7,13 @@ import sys
 import os
 
 def help():
-    print("Usage : ./" + str(sys.argv[0]) + " airgap upload [FILE1] [FILE2] [..]")
+    print("Usage : cyberwatch-cli airgap upload-compliance [FILE1] [FILE2] [..]")
     print("---")
     print("Upload airgap compliance scan results.")
     print("---")
     print("If there is no file specified, this script will look into the `cyberwatch-airgap-compliance/uploads/` directory if it exists to find results scripts to upload.")
 
-def upload_result_file(result_file, verify_ssl=False):
+def upload_result_file(result_file, CBW_API, verify_ssl=False):
     print("\n[*] Uploading : " + str(result_file))
 
     try: # Catch error like 'file doesn't exist'
@@ -24,9 +24,9 @@ def upload_result_file(result_file, verify_ssl=False):
     except Exception as error:
         print(str(error))
         return
-
-    # Sending result
-    apiResponse = Cyberwatch_Pyhelper().request(
+    
+    # Sending result    
+    apiResponse = CBW_API.request(
         method="POST",
         endpoint="/api/v2/compliances/scripts",
         body_params={
@@ -43,7 +43,7 @@ def upload_result_file(result_file, verify_ssl=False):
     else:
         print("ERROR : " + str(result.content))
 
-def manager(arguments, verify_ssl=False):
+def manager(arguments, CBW_API, verify_ssl=False):
 
     parser = argparse.ArgumentParser()
     parser.add_argument("files", nargs="*")
@@ -58,8 +58,8 @@ def manager(arguments, verify_ssl=False):
         else:
             print("No file has been specified, searching through the `cyberwatch-airgap-compliance/uploads/` directory.\n--")
             for file in os.listdir("cyberwatch-airgap-compliance/uploads"):
-                upload_result_file(os.path.join("cyberwatch-airgap-compliance/uploads", file), verify_ssl)
+                upload_result_file(os.path.join("cyberwatch-airgap-compliance/uploads", file), CBW_API, verify_ssl)
     else:
         for file in options.files:
-            upload_result_file(file, verify_ssl)
+            upload_result_file(file, CBW_API, verify_ssl)
 
