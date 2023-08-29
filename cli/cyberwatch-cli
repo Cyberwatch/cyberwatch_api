@@ -2,7 +2,7 @@
 
 from cyberwatch_api import Cyberwatch_Pyhelper
 import sys
-from bin import os, airgap
+from cli.bin import os, airgap
 import requests
 from urllib3.exceptions import InsecureRequestWarning
 

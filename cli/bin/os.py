@@ -1,4 +1,3 @@
-from cyberwatch_api import Cyberwatch_Pyhelper
 import sys
 
 def help():

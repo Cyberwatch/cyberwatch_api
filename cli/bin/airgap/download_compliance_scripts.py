@@ -1,7 +1,6 @@
-from cyberwatch_api import Cyberwatch_Pyhelper
-from os.path import abspath, basename, dirname, join
+from os.path import abspath,  join
 import os
-from .. import os as cbw_os
+from cli.bin import os as cbw_os
 import argparse
 import sys
 import shutil

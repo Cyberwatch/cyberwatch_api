@@ -1,9 +1,5 @@
-from cyberwatch_api import Cyberwatch_Pyhelper
-from os.path import abspath, basename, dirname, join
-from itertools import groupby
 import argparse
 import chardet
-import sys
 import os
 
 def help():
