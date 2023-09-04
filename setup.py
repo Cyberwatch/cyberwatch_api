@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='cyberwatch_api',
-      version='0.3.5',
+      version='0.3.6',
       description='Python Api client for the Cyberwatch software',
       long_description=open('README.md').read().strip(),
       long_description_content_type="text/markdown",

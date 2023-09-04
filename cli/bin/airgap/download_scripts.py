@@ -53,8 +53,8 @@ def download_scripts(destination_folder, CBW_API, verify_ssl=False, with_attachm
         if target_os in ("Aix", "Linux", "Macos", "Vmware"):
             run_script_filename = join(script_dir, target_os, "run")
             with open(run_script_filename, "w") as file_stream:
-                file_stream.write(SH_EXECUTE_SCRIPT.format(" ".join(content for (os, content) in scripts)))
-                os.chmod(run_script_filename, 0o755)
+                file_stream.write(SH_EXECUTE_SCRIPT.format(" ".join(sorted([content for (os, content) in scripts], key=lambda x: (x[0] != 'I', x)))))
+                os.chmod(run_script_filename, 0o760)
 
         if target_os == "Windows":
                 run_script_filename = join(script_dir, target_os, "run.ps1")

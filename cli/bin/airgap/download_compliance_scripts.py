@@ -47,6 +47,7 @@ def download_compliance_scripts(os_key, repositories, destination_folder, CBW_AP
     run_script = "".join((script_dir, "/", compliance_scripts_metadata["filename"]))
     with open(run_script, "w") as filestream:
         filestream.write(compliance_scripts_metadata["script_content"])
+        os.chmod(run_script, 0o760)
     
     print("\033[A\033[A\nDownload complete ! Scripts are located in '" + str(destination_folder) + "'")
     
@@ -64,7 +65,7 @@ def manager(arguments, CBW_API, verify_ssl=False):
         help()
     
     elif arguments and arguments[0] == 'list-os':
-        cbw_os.manager(["list"])
+        cbw_os.manager(["list"], CBW_API)
 
     elif options.os is None or not options.repositories:
         print("You need to specify an OS and a list of one or many repositories to fetch the associated compliance rules.")
