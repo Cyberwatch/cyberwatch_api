@@ -28,6 +28,7 @@ def upload_result_file(result_file, CBW_API, verify_ssl=False):
         body_params={
             "output" : file_content
         },
+        timeout=90,
         verify_ssl=verify_ssl
     )
     # If the operation is successful, the apiResponse is empty and the status code is 204
