@@ -106,7 +106,7 @@ cyberwatch-cli os list
 To download the rules, you need to execute the following command and replace the `os` and `repositories` arguments with your own selected values, for example:
 
 ```bash
-cyberwatch-cli airgap download-compliance-scripts --os ubuntu_2204_64 --repositories Security_Best_Practices, CIS_Benchmark
+cyberwatch-cli airgap download-compliance-scripts --os ubuntu_2204_64 --repositories Security_Best_Practices CIS_Benchmark
 ```
 
 The scripts will be found in the `cyberwatch-airgap-compliance/scripts/` subfolder. To specify a different destination directory, you can use the `--dest-dir` argument.
