@@ -10,7 +10,7 @@ def help():
     print("Download airgap scripts.\n")
     print("{: >23} \t {: >20} \t{}".format("ARGS", "DEFAULT", "DESCRIPTION"))
     print("{: >23} \t {: >20} \t{}".format("---", "---", "---"))
-    print("{: >23} \t {: >20} \t{}".format("--no-attachment", "False", "-"))
+    print("{: >23} \t {: >20} \t{}".format("--add-attachment", "False", "Download the Windows cab file"))
     print("{: >23} \t {: >20} \t{}".format("--dest-dir", "cyberwatch-airgap", "Destination folder where to put the downloaded scripts"))
     print("\n")
 
@@ -95,7 +95,7 @@ def download_individual_script(scriptID, base_dir, CBW_API, with_attachment=Fals
 def manager(arguments, CBW_API, verify_ssl=False):
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--no-attachment", action="store_false")
+    parser.add_argument("--add-attachment", action="store_false")
     parser.add_argument("--dest-dir", default="cyberwatch-airgap")
     parser.add_argument("help", nargs="?")
     options = parser.parse_args(arguments)
@@ -103,4 +103,4 @@ def manager(arguments, CBW_API, verify_ssl=False):
     if arguments and arguments[0] == "help":
         help()
     else:
-        download_scripts(options.dest_dir, CBW_API, verify_ssl, options.no_attachment)
+        download_scripts(options.dest_dir, CBW_API, verify_ssl, options.add_attachment)

@@ -25,7 +25,21 @@ def help():
     print("{: >15} \t {}".format("---", "---"))
     print("{: >15} \t {}".format("os", "Manage cyberwatch operating systems"))
     print("{: >15} \t {}".format("airgap", "Interact with the airgap interface"))
+    print("{: >15} \t {}".format("ping", "Ping the Cyberwatch API to validate the connexion"))
     print("\n")
+
+def ping(CBW_API, verify_ssl=False):
+    apiResponse = CBW_API.request(
+        method="GET",
+        endpoint="/api/v3/ping",
+        verify_ssl=verify_ssl
+    )
+    print("Trying to ping Cyberwatch API...")
+    response = next(apiResponse).json()
+    print(response)
+    if response.get("error") is not None:
+        print("Failed ping to Cyberwatch API, exiting...")
+        sys.exit(1)
 
 arguments = sys.argv[1:]
 
@@ -54,9 +68,13 @@ try:
 
     if not arguments or arguments[0] == "help":
         help()
+    elif arguments[0] == "ping":
+        ping(CBW_API, VERIFY_SSL)
     elif arguments[0] == "os":
+        ping(CBW_API, VERIFY_SSL)
         os.manager(arguments[1:], CBW_API, VERIFY_SSL)
     elif arguments[0] == "airgap":
+        ping(CBW_API, VERIFY_SSL)
         airgap.manager(arguments[1:], CBW_API, VERIFY_SSL)
     else:
         print("ERROR : '" + str(arguments[0]) + "' is not a valid command\n---", file=sys.stderr)
