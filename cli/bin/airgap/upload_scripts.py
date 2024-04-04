@@ -31,7 +31,7 @@ def upload_result_file(result_file, CBW_API, verify_ssl=False):
         timeout=90,
         verify_ssl=verify_ssl
     )
-    result = next(apiResponse)
+    result = next(apiResponse).json()
 
     # Printing the upload result
     if 'error' in result:
@@ -40,8 +40,8 @@ def upload_result_file(result_file, CBW_API, verify_ssl=False):
         print("[+] Upload successful ! Server ID : " + str(result["server_id"]))
     else:
         print("Upload is done.")
-        
-    return next(apiResponse).json()
+
+    return result
 
 def manager(arguments, CBW_API, verify_ssl=False):
 
@@ -62,4 +62,3 @@ def manager(arguments, CBW_API, verify_ssl=False):
     else:
         for file in options.files:
             upload_result_file(file, CBW_API, verify_ssl)
-
