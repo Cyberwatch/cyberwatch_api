@@ -1,5 +1,4 @@
 from cyberwatch_api import Cyberwatch_Pyhelper
-from datetime import datetime
 
 """
 This script will fetch all the rules associated to the repository list defined, and 

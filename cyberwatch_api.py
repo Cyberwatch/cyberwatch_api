@@ -52,7 +52,7 @@ class Cyberwatch_Pyhelper:
                 parameter_value = (kwargs.get("params",{}).get(parameter) or kwargs.get("body_params",{}).get(parameter))
                 endpoint = endpoint.replace("{" + parameter + "}", str(parameter_value))
                 # Deleting the 'parameter' from the kwargs arguments if it exists
-                [kwargs[key].pop(parameter, "") for key in kwargs if type(kwargs[key]) == dict]
+                [kwargs[key].pop(parameter, "") for key in kwargs if isinstance(kwargs[key], dict)]
 
             kwargs.update({"endpoint": endpoint})
             return f(*args, **kwargs)
@@ -125,8 +125,10 @@ class Cyberwatch_Pyhelper:
         """
         Only accessible method, handles every step of the API call
         """
-        if not isinstance(kwargs.get("method"), str): raise Exception("The type of endpoint parameter should be str")
-        if kwargs.get("timeout") and not isinstance(kwargs.get("timeout"), int): raise Exception("The type of timeout parameter should be int")
+        if not isinstance(kwargs.get("method"), str):
+            raise Exception("The type of endpoint parameter should be str")
+        if kwargs.get("timeout") and not isinstance(kwargs.get("timeout"), int):
+            raise Exception("The type of timeout parameter should be int")
 
         method = str(kwargs.get("method")).upper()
         timeout = kwargs.get("timeout") or 10

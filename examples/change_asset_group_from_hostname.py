@@ -1,6 +1,5 @@
 # This script will replace asset's groups by another one
 from cyberwatch_api import Cyberwatch_Pyhelper
-import json
 import requests
 from urllib3.exceptions import InsecureRequestWarning
 

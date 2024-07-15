@@ -245,7 +245,8 @@ def launch_script():
    
     # Outputing
     print("\n\n================= " + str(len(high_priority_cve_set)) + " new high-priority CVEs found ================='")
-    for key, value in high_priority_cve_set.items(): print("{: >20} : {}".format(key, value))
+    for key, value in high_priority_cve_set.items():
+        print("{: >20} : {}".format(key, value))
 
     # Send the email
     try:
