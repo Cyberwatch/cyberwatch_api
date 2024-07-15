@@ -66,13 +66,16 @@ def download_scripts(destination_folder, CBW_API, verify_ssl=False, with_attachm
         print("\033[A\033[A\nDownload complete ! Scripts are located in '" + str(destination_folder) + "'" + " " * 20)
 
 def append_extension(target_os):
-    if target_os in ("Aix", "Linux", "Macos", "Vmware"): return ".sh"
-    if target_os == "Windows": return ".ps1"
+    if target_os in ("Aix", "Linux", "Macos", "Vmware"):
+        return ".sh"
+    if target_os == "Windows":
+        return ".ps1"
     return ""
 
 def download_individual_script(scriptID, base_dir, CBW_API, with_attachment=False, verify_ssl=False):
     script = retrieve_scripts(str(scriptID), CBW_API, verify_ssl)
-    if script is None or script["type"] is None: return None, None
+    if script is None or script["type"] is None:
+        return None, None
 
     target_os, script_name = script["type"].split("::")[1:]
     script_dir = join(base_dir + "/" + target_os)

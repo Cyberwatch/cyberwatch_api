@@ -30,7 +30,8 @@ def retrieve_asset_cves_patches(assetID):
 def launch_script():
     assets = retrieve_assets()
     print("[+] " + str(len(assets)) + " assets were found on this cyberwatch node")
-    if not assets: return
+    if not assets:
+        return
 
     assets_with_KB_patch_available = {} # All assets with at least one KB patch available
 

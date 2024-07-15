@@ -50,7 +50,7 @@ def manager(arguments, CBW_API, verify_ssl=False):
         help()
     
     elif not options.files:
-        if not "cyberwatch-airgap-compliance" in os.listdir("."):
+        if "cyberwatch-airgap-compliance" not in os.listdir("."):
             help()
         else:
             print("No file has been specified, searching through the `cyberwatch-airgap-compliance/uploads/` directory.\n--")
