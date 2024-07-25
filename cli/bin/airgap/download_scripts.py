@@ -95,7 +95,7 @@ def download_individual_script(scriptID, base_dir, CBW_API, with_attachment=Fals
 def manager(arguments, CBW_API, verify_ssl=False):
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--add-attachment", action="store_false")
+    parser.add_argument("--add-attachment", action="store_true")
     parser.add_argument("--dest-dir", default="cyberwatch-airgap")
     parser.add_argument("help", nargs="?")
     options = parser.parse_args(arguments)
