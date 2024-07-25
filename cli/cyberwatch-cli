@@ -28,15 +28,15 @@ def help():
     print("{: >15} \t {}".format("ping", "Ping the Cyberwatch API to validate the connexion"))
     print("\n")
 
-def ping(CBW_API, verify_ssl=False):
+def ping(CBW_API, verify_ssl=False, verbose=False):
     apiResponse = CBW_API.request(
         method="GET",
         endpoint="/api/v3/ping",
         verify_ssl=verify_ssl
     )
-    print("Trying to ping Cyberwatch API...")
+    if verbose : print("Trying to ping Cyberwatch API...")
     response = next(apiResponse).json()
-    print(response)
+    if verbose: print(response)
     if response.get("error") is not None:
         print("Failed ping to Cyberwatch API, exiting...")
         sys.exit(1)
@@ -69,7 +69,7 @@ try:
     if not arguments or arguments[0] == "help":
         help()
     elif arguments[0] == "ping":
-        ping(CBW_API, VERIFY_SSL)
+        ping(CBW_API, VERIFY_SSL, True)
     elif arguments[0] == "os":
         ping(CBW_API, VERIFY_SSL)
         os.manager(arguments[1:], CBW_API, VERIFY_SSL)
