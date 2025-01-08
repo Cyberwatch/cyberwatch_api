@@ -30,6 +30,9 @@ To install the Cyberwatch API module, use Python 3 with:
 pip3 install cyberwatch_api
 ```
 
+> [!WARNING]
+> Since pip 23.1, using pip in the system is disabled by defaut to prevent breaking system packages by overwriting dependencies. To avoid this, you can use a virtual environment (python3 -m venv env), or add the --break-system-packages to force the installation. More information regarding this in the [documentation](https://packaging.python.org/en/latest/specifications/externally-managed-environments/#externally-managed-environments).
+
 ### Configuration
 
 To be able to authenticate to the Cyberwatch API, you need to configure the api.conf file. This client authenticates using basic auth.
