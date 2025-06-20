@@ -15,7 +15,7 @@ warnings.filterwarnings("ignore", message="Unverified HTTPS request")
 cyberwatch = Cyberwatch_Pyhelper()
 
 # Here you can select the number of days to be included in the analysis
-# By default it set to 7
+# By default it is set to 7
 # If days=0, all the CVE are taken into account
 NUMBER_OF_DAY = datetime.now(timezone.utc) - timedelta(days=7)
 
@@ -24,6 +24,7 @@ GROUPS_TO_INCLUDE = [
     "group2"
 ]
 
+
 # Function to retrieve the list of unique assets
 def get_all_assets():
     all_assets = []
@@ -31,7 +32,31 @@ def get_all_assets():
     page = 1
     per_page = 500
 
-    while True:  # Infinite loop until no more assets are available
+    print(f"[DEBUG] Fetching page {page} of assets...")
+    output = cyberwatch.request(
+        method="get",
+        endpoint="/api/v3/servers",
+        body_params={"page": page, "per_page": per_page},
+        verify_ssl=False
+    )
+    assets = next(output).json()
+
+    while assets:
+        # Keep only new hostnames
+        new_assets = [asset for asset in assets if asset["hostname"] not in seen_hostnames]
+        all_assets.extend(new_assets)
+        seen_hostnames.update(asset["hostname"] for asset in new_assets)
+        print(f"[DEBUG] Page {page} fetched, {len(new_assets)} unique assets added.")
+
+        if len(assets) < per_page:
+            print("[DEBUG] Fewer assets than 'per_page', reached the last page.")
+            break
+
+        if len(new_assets) == 0:
+            print("[DEBUG] No new unique assets found on this page, stopping.")
+            break
+
+        page += 1
         print(f"[DEBUG] Fetching page {page} of assets...")
         output = cyberwatch.request(
             method="get",
@@ -39,25 +64,7 @@ def get_all_assets():
             body_params={"page": page, "per_page": per_page},
             verify_ssl=False
         )
-
-        assets = next(output).json()  # Retrieve the first line from the generator
-        if not assets:
-            print("[DEBUG] No further data found, stopping fetch job.")
-            break
-
-        # Add unique assets
-        new_assets = [asset for asset in assets if asset["hostname"] not in seen_hostnames]
-        all_assets.extend(new_assets)
-        seen_hostnames.update(asset["hostname"] for asset in new_assets)
-
-        print(f"[DEBUG] Page {page} fetched successfully, {len(new_assets)} unique assets added.")
-
-        # Check if the number of assets returned is less than `per_page`
-        if len(assets) < per_page:
-            print("[DEBUG] Fewer assets than expected, reached the last page.")
-            break
-
-        page += 1
+        assets = next(output).json()
 
     print(f"[DEBUG] Total unique assets retrieved: {len(all_assets)}")
     return all_assets
@@ -147,7 +154,8 @@ def group_servers_by_vulnerabilities():
                 consolidated_data[product]['servers'].add(server_name)
                 consolidated_data[product]['groups'].update(groups)
 
-                if not consolidated_data[product]['latest_published_date'] or cve['published_date'] > consolidated_data[product]['latest_published_date']:
+                if (not consolidated_data[product]['latest_published_date'] or
+                        cve['published_date'] > consolidated_data[product]['latest_published_date']):
                     consolidated_data[product]['latest_published_date'] = cve['published_date']
                     consolidated_data[product]['target_version'] = cve['target_version']
 
