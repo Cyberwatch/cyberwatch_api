@@ -1,6 +1,12 @@
-from cyberwatch_api import Cyberwatch_Pyhelper
-from cbw_helper import *
-import sys
+from cbw_helper import (
+    PARSE_CONFIG,
+    NESSUS_API,
+    cbw_clearNessusData,
+    cbw_createAirgapAsset,
+    cbw_retrieveSecurityIssue,
+    cbw_deleteSecurityIssue,
+    cbw_createSecurityIssue
+)
 import urllib3
 urllib3.disable_warnings(category=urllib3.exceptions.InsecureRequestWarning)
 
@@ -48,8 +54,8 @@ for SCAN in SCANS:
                 URL = '{}/scans/{}/hosts/{}/plugins/{}'.format(NESSUS_URL, SCAN["id"], HOST_ID, PLUGIN)
                 RESPONSE = NESSUS_API(URL)
                 CVE_LIST = list(set(CVE_LIST + next(ref["values"]["value"] for ref in NESSUS_API(URL).json()["info"]["plugindescription"]["pluginattributes"]["ref_information"]["ref"] if ref["name"] == "cve")))
-            except:
-                next
+            except Exception:
+                pass
 
         #####
         # If it is the first time we find the host, we save it. Otherwise, we just append the found CVEs

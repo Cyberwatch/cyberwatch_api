@@ -3,6 +3,7 @@
 """Remove assets on a cyberwatch instance based on the number of days of the last communication.
 """
 
+from datetime import datetime, timedelta
 from cyberwatch_api import Cyberwatch_Pyhelper
 
 def get_assets():
