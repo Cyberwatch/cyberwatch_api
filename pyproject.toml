@@ -1,2 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cyberwatch_api"
+version = "0.3.2"
+description = "Python Api client for the Cyberwatch software"
+readme = "README.md"
+license = "MIT"
+authors = [{name = "CyberWatch SAS"}]
+requires-python = ">=3.6"
+dependencies = [
+    "requests>=2.20.1",
+    "chardet"
+]
+
+[project.scripts]
+cyberwatch-cli = "cbw_cli.cyberwatch_cli:main"
+
+[tool.setuptools]
+py-modules = ["cyberwatch_api"]
+
+[tool.setuptools.packages.find]
+include = ["cbw_cli*", "*"]
+
 [tool.ruff]
 line-length = 120
