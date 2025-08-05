@@ -1,5 +1,5 @@
 import sys
-from cli.bin.airgap import download_scripts, download_compliance_scripts, upload_scripts, upload_compliance_scripts
+from cbw_cli.bin.airgap import download_scripts, download_compliance_scripts, upload_scripts, upload_compliance_scripts
 
 def help():
     print("Usage : cyberwatch-cli airgap [COMMAND] [ARGS]")
