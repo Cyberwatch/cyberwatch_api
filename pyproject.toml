@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cyberwatch_api"
-version = "0.3.2"
+version = "1.0.0"
 description = "Python Api client for the Cyberwatch software"
 readme = "README.md"
 license = "MIT"
