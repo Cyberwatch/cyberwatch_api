@@ -143,7 +143,7 @@ output = Cyberwatch_Pyhelper().request(
 
 ## Command Line Documentation
 
-See the command line interface documentation [here](cli/README.md)
+See the command line interface documentation [here](cbw_cli/README.md)
 
 ## FAQs
 
